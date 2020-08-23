@@ -4,12 +4,17 @@ export default class crudBanco{
     static async adicionar(tabela:string, insert={}, retorno=['*']){
         try{
             const [inserido] = await db(tabela).insert(insert).returning(retorno);
-            return {'inserido':inserido, 'status':201};
-        }catch(err){
-            if(err.code==='SQLITE_CONSTRAINT' || err.code==='23505' || err.code==='23503'){
-                return {'status':201};
+            if(inserido){
+                return {'inserido':inserido, 'status':201};
             }else{
-                return {'status':201};
+                return {'status': 400}
+            }
+        }catch(err){
+            console.log(err);
+            if(err.code==='23505' || err.code==='23503'){
+                return {'status':400};
+            }else{
+                return {'status':500};
             }
         }
     }
@@ -26,10 +31,10 @@ export default class crudBanco{
             if(orderBy[0]!==''){
                 query = query.orderBy(orderBy);
             }
-            const [select] = await query;
+            const select = await query;
             return {'select': select, 'status': 200};
         }catch(err){
-            return {'select':{},'status': 500};
+            return {'select':[],'status': 500};
         }
     }
 
