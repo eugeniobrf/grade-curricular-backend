@@ -10,7 +10,6 @@ export default class crudBanco{
                 return {'status': 400}
             }
         }catch(err){
-            console.log(err);
             if(err.code==='23505' || err.code==='23503'){
                 return {'status':400};
             }else{
@@ -53,8 +52,12 @@ export default class crudBanco{
 
     static async editar(tabela: string, chave={},update={}, select = ["*"]){
         try{
-            const editado = await db(tabela).update(update).where(chave).returning(select);
-            return {"editado":editado,status:200};
+            const [editado] = await db(tabela).update(update).where(chave).returning(select);
+            if(editado){
+                return {'editado':editado,status:200};
+            }else{
+                return {'status':400};
+            }
         }catch(err){
             if(err.code==='SQLITE_CONSTRAINT' || err.code==='23505' || err.code==='23503'){
                 return {'status':400};
