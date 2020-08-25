@@ -13,18 +13,17 @@ Para isto, foi desenvolvido em nodeJS e armazenado neste repositório o backend 
     *   Tipo: POST
     *   Rota: /login
     *   Parâmetro: body contendo json com os campos {matricula,senha}
-    *   Retorno: Dados básicos do usuário logado e o token criado: {nome, matricula, email, curso, grade, token}
+    *   Retorno: Dados básicos do usuário logado no body: {nome, matricula, email, curso, grade} e token gerado no header: {Token}
 *   **[x] criar suporte anônimo:**
     *   Tipo: POST
-    *   Rota: /suporte
+    *   Rota: /suporteAnonimo
     *   Parâmetro: body contendo json com o campo {descricao}
     *   Retorno: Dados do suporte criado {codigo,descricao}
-    *   
 *   **[x] criar usuário:**
     *   Tipo: POST
     *   Rota: /usuario
     *   Parâmetro: body contendo json com os campos {nome, matricula, email, curso, senha, grade}
-    *   Retorno: Dados do usuario criado {nome, matricula, email, curso, grade}
+    *   Retorno: Dados do usuário criado {nome, matricula, email, curso, grade}
 *   **[x] listar cursos:**
     *   Tipo: GET
     *   Rota: /cursos
@@ -50,26 +49,73 @@ Para isto, foi desenvolvido em nodeJS e armazenado neste repositório o backend 
     *   Rota: /disciplinasGrade/:grade
     *   Parâmetro: grade na rota é o código da grade da qual se deseja listar as disciplinas
     *   Retorno: { obrigatorias: [{codigo, nome, cargaHoraria, periodo}, ...], eletivas:  [{codigo, nome, cargaHoraria, periodo}, ...] }
-*   **[] esqueci a senha (decidir como vai ser):**
+*   **[] esqueci a senha (decidir como vai ser feito):**
 
 
-## Endpoints que apenas usuários logados podem acessar:
+## Endpoints que apenas usuários logados podem acessar (passando o token no campo token do header da requisição):
 
 
 
-*   **[] editar usuário:**
-*   **[] cadastrar atividade eletiva:**
-*   **[] editar atividade eletiva:**
-*   **[] excluir atividade eletiva:**
-*   **[] listar atividades eletivas cursadas (retornar junto horas de atividades eletivas que faltam cursar):**
-*   **[] criar suporte:**
-*   **[] listar suportes criados:**
-*   **[] cadastrar disciplina cursada:**
-*   **[] listar disciplinas cursadas:**
-*   **[] excluir disciplina cursada:**
-*   **[] listar disciplinas obrigatórias com marcação de cursada ou não (retornar junto horas obrigatórias que faltam cursar):**
-*   **[] listar disciplinas eletivas cursadas (retornar junto horas eletivas que faltam cursar):**
-*   **[] listar disciplinas complementares cursadas (retornar junto horas complementares que faltam cursar):**
+*   **[x] editar usuário:**
+    *   Tipo: put
+    *   Rota: /usuario
+    *   Parâmetro: body contendo json com os campos {nome, matricula, email, curso, grade}, sendo todos opcionais, ou seja, pode se passar apenas um desses campos 
+    *   Retorno: Dados do usuário editado {nome, matricula, email, curso, grade}
+*   **[x] editar senha usuário:**
+    *   Tipo: put
+    *   Rota: /senhaUsuario
+    *   Parâmetro: body contendo json com os campos {senhaAntiga, senhaNova}
+    *   Retorno:  Dados do usuário editado {nome, matricula, email, curso, grade}
+*   **[x] excluir usuário:**
+    *   Tipo: delete
+    *   Rota: /usuario
+    *   Parâmetro: body contendo json com o campo {senha}
+    *   Retorno: nenhum
+*   **[x] criar suporte:**
+    *   Tipo: POST
+    *   Rota: /suporte
+    *   Parâmetro: body contendo json com o campo {descricao}
+    *   Retorno: Dados do suporte criado {codigo,descricao}
+*   **[x] listar suportes criados pelo usuário:**
+    *   Tipo: GET
+    *   Rota: /suporte
+    *   Parâmetro: nenhum
+    *   Retorno: Dados dos suportes criados  [{codigo,descricao,status},...]
+*   **[x] cadastrar atividade eletiva:**
+    *   Tipo: POST
+    *   Rota: /atividadeEletiva
+    *   Parâmetro: body contendo JSON com campos {nome,descricao,horas}
+    *   Retorno: body contento os dados da atividade eletiva criada: {codigo, nome, descricao, horas}
+*   **[x] listar atividades eletivas cursadas:**
+    *   Tipo: GET
+    *   Rota: /atividadeEletiva
+    *   Parâmetro: nenhum
+    *   Retorno: body contento os dados das atividades eletivas cursadas: [{codigo, nome, descricao, horas},...]
+*   **[x] editar atividade eletiva:**
+    *   Tipo: PUT
+    *   Rota: /atividadeEletiva/:codigo
+    *   Parâmetro: body contendo os novos dados da atividade eletiva: {nome,descricao,horas} e codigo da rota é o código da disciplina a ser editada
+    *   Retorno: body contento os dados da atividades eletiva editada: {codigo, nome, descricao, horas}
+*   **[x] excluir atividade eletiva:**
+    *   Tipo: DELETE
+    *   Rota: /atividadeEletiva/:codigo
+    *   Parâmetro: codigo da rota é o código da disciplina a ser editada
+    *   Retorno: nenhum
+*   **[x] cadastrar disciplina cursada:**
+    *   Tipo: POST
+    *   Rota: /disciplinaCursada
+    *   Parâmetro: body contendo o código da disciplina {disciplina}
+    *   Retorno: disciplina cursada cadastrada {disciplina}
+*   **[x] excluir disciplina cursada:**
+    *   Tipo: DELETE
+    *   Rota: /disciplinaCursada
+    *   Parâmetro: body contendo o código da disciplina {disciplina}
+    *   Retorno: disciplina cursada cadastrada {disciplina}
+*   **[x] detalhar grade:**
+    *   Tipo: GET
+    *   Rota: /grade
+    *   Parâmetro: nenhum
+    *   Retorno: body contendo os dados da grade: {numPeriodos, obrigatorias: [{codigo, nome, cargaHoraria, periodo, cursada},...], eletivas: [{codigo, nome, cargaHoraria},...], complementares: [{codigo, nome, cargaHoraria}, ...], horasObrigatorias, horasEletivas, horasComplementares, horasAtividadesEletivas }
 
 
 ## Endpoints que apenas usuários logados como admin podem acessar:

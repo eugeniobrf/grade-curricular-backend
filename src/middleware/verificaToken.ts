@@ -13,7 +13,6 @@ function verificaToken (request: Request, response: Response, next:Function){
         try{
             let tokenValidado = <any>jwt.verify(token,senhaToken);
             response.locals.matricula = tokenValidado.matricula;
-            response.locals.curso = tokenValidado.curso;
             response.locals.grade = tokenValidado.grade;
             return next();
         }catch(err){

@@ -44,7 +44,7 @@ export default class usuarioController{
                         if(!senhaToken){
                             return response.status(500).json();
                         }
-                        const token = jwt.sign({'matricula': selected.matricula,'curso': selected.curso, 'grade': selected.grade},senhaToken,{'expiresIn': tempoToken});
+                        const token = jwt.sign({'matricula': selected.matricula, 'grade': selected.grade},senhaToken,{'expiresIn': tempoToken});
                         response.setHeader('token',token);
                         return response.status(200).json(
                             {
