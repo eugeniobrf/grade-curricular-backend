@@ -2,19 +2,23 @@ import {Request, Response} from 'express';
 import bcrypt from 'bcrypt';
 import crudBanco from '../database/crudBanco';
 import jwt from 'jsonwebtoken';
+import enviaEmail from '../utils/enviaEmail';
 
 const saltRounds = 10;
 const tempoToken = '10h';
 
 export default class usuarioController{
     static async addUsuario(request: Request, response: Response){
-        let {nome, matricula, email, curso, senha, grade} = request.body;
+        const {nome, matricula, email, curso, senha, grade} = request.body;
         if(!(nome && matricula && email && curso && senha && grade)){
             return response.status(400).json();
         }else{
             try{
-                senha = await bcrypt.hash(senha,saltRounds);
-                const {inserido,status} = await crudBanco.adicionar('usuario',{nome, matricula, email, curso, senha, grade},['nome','matricula','email','curso','grade']);
+                if(senha.lenght<7 || senha.lenght>100){
+                    return response.status(400).json();
+                }
+                const senhaCriptografada = await bcrypt.hash(senha,saltRounds);
+                const {inserido,status} = await crudBanco.adicionar('usuario',{nome, matricula, email, curso, "senha":senhaCriptografada, grade},['nome','matricula','email','curso','grade']);
                 return response.status(status).json(inserido);
             }catch(err){
                 return response.status(500).json();
@@ -44,7 +48,7 @@ export default class usuarioController{
                         if(!senhaToken){
                             return response.status(500).json();
                         }
-                        const token = jwt.sign({'matricula': selected.matricula, 'grade': selected.grade},senhaToken,{'expiresIn': tempoToken});
+                        const token = jwt.sign({'matricula': selected.matricula},senhaToken,{'expiresIn': tempoToken});
                         response.setHeader('token',token);
                         return response.status(200).json(
                             {
@@ -152,6 +156,33 @@ export default class usuarioController{
                 }else{
                     const statusRemove = await crudBanco.delete('usuario',{'matricula':matricula});
                     return response.status(statusRemove).json();
+                }
+            }
+        }
+    }
+
+    static async esqueciSenha(request:Request,response:Response){
+        const {email} = request.body;
+        if(!email){
+            return response.status(400).json();
+        }
+        const {select,status} = await crudBanco.listar('usuario',['nome','matricula','email'],'',{},{email});
+        const selected = select[0];
+        if(status===500){
+            return response.status(status).json();
+        }else{
+            if(!selected){
+                return response.status(400).json({erro: "Email não existe"}); 
+            }else{
+                try{
+                    const senhaToken=process.env.SENHA_TOKEN_ESQUECI;
+                    if(!senhaToken){
+                        return response.status(500).json();
+                    }
+                    const token = jwt.sign({'matricula': selected.matricula},senhaToken,{'expiresIn': '1h'});
+                    enviaEmail(selected.email,selected.nome,token);
+                }catch{
+                    return response.status(500).json();
                 }
             }
         }

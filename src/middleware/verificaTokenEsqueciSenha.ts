@@ -6,7 +6,7 @@ function verificaToken (request: Request, response: Response, next:Function){
     if(!token){
         return response.status(401).json();
     }else{
-        const senhaToken=process.env.SENHA_TOKEN;
+        const senhaToken=process.env.SENHA_TOKEN_ESQUECI;
         if(!senhaToken){
             return response.status(500).json();
         }

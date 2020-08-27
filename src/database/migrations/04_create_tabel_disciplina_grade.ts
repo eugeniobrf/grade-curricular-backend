@@ -9,7 +9,7 @@ export async function up(knex: Knex){
             table.integer('tipo').notNullable();
             table.primary(['disciplina','grade']);
             table.foreign('disciplina').references('codigo').inTable('disciplina').onUpdate('CASCADE'). onDelete('RESTRICT');
-            table.foreign('grade').references('codigo').inTable('grade').onUpdate('CASCADE').onDelete   ('RESTRICT');
+            table.foreign('grade').references('codigo').inTable('grade').onUpdate('CASCADE').onDelete('RESTRICT');
         }
     );
 }

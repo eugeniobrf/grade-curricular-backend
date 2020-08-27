@@ -8,10 +8,9 @@ export async function up(knex: Knex){
         table.integer('horasObrigatorias').notNullable();
         table.integer('horasEletivas').notNullable();
         table.integer('horasComplementares').notNullable();
-        table.integer('horasAtividadesEletivas').notNullable();
         table.integer('numPeriodos').notNullable();
         table.unique(['ano','curso']);
-        table.foreign('curso').references('nomeCurso').inTable('curso').onUpdate('CASCADE').onDelete('CASCADE')
+        table.foreign('curso').references('nomeCurso').inTable('curso').onUpdate('CASCADE').onDelete('RESTRICT')
     });
 }
 

@@ -6,7 +6,7 @@ export async function up(knex: Knex){
             table.string('disciplina',9).notNullable;
             table.primary(['usuario','disciplina']);
             table.foreign('usuario').references('matricula').inTable('usuario').onUpdate('CASCADE').onDelete('CASCADE');
-            table.foreign('disciplina').references('codigo').inTable('disciplina').onUpdate('CASCADE').onDelete('CASCADE');
+            table.foreign('disciplina').references('codigo').inTable('disciplina').onUpdate('CASCADE').onDelete('RESTRICT');
         }
     )
 }

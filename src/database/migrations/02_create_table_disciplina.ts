@@ -7,7 +7,7 @@ export async function up(knex: Knex){
             table.string('nome',50).notNullable();
             table.integer('cargaHoraria').notNullable();
             table.string('departamento',3).notNullable();
-            table.foreign('departamento').references('codigo').inTable('departamento').onUpdate('CASCADE').onDelete('CASCADE');
+            table.foreign('departamento').references('codigo').inTable('departamento').onUpdate('CASCADE').onDelete('RESTRICT');
         }
     );
 }
