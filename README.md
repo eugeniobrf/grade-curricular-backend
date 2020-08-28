@@ -49,12 +49,16 @@ Para isto, foi desenvolvido em nodeJS e armazenado neste repositório o backend 
     *   Rota: /detalharGrade/:grade
     *   Parâmetro: grade na rota é o código da grade da qual se deseja listar as disciplinas
     *   Retorno: { obrigatorias: [{codigo, nome, cargaHoraria, periodo}, ...], eletivas:  [{codigo, nome, cargaHoraria, periodo}, ...], horasObrigatorias, horasEletivas, horasComplementares }
-*   **[+-] esqueci a senha: **
+*   **[x] esqueci a senha: **
     *   Tipo: GET
-    *   Rota: /detalharGrade/:grade
-    *   Parâmetro: grade na rota é o código da grade da qual se deseja listar as disciplinas
-    *   Retorno: { obrigatorias: [{codigo, nome, cargaHoraria, periodo}, ...], eletivas:  [{codigo, nome, cargaHoraria, periodo}, ...], horasObrigatorias, horasEletivas, horasComplementares }
-    *   
+    *   Rota: /esqueciSenha
+    *   Parâmetro: body contendo o email do usuário {email}
+    *   Retorno: nenhum
+*   **[x] Editar senha após esquecê-la:**
+    *   Tipo: GET
+    *   Rota: /esqueciSenha/:token
+    *   Parâmetro: token na rota é o token para que se possa editar a senha (link completo é enviado por email após se acessar corretamente a rota /esqueciSenha) e body com JSON contendo {matricula,novaSenha}.
+    *   Retorno: json {'nome', 'matricula', 'email', 'curso', 'grade'} do usuário que teve a senha recuperada
 
 
 ## Endpoints que apenas usuários logados podem acessar (passando o token no campo token do header da requisição):

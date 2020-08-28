@@ -4,7 +4,7 @@ import crudBanco from '../database/crudBanco';
 import jwt from 'jsonwebtoken';
 import enviaEmail from '../utils/enviaEmail';
 
-const saltRounds = 10;
+const saltRounds = process.env.SALTROUNDS;
 const tempoToken = '10h';
 
 export default class usuarioController{
@@ -16,6 +16,9 @@ export default class usuarioController{
             try{
                 if(senha.lenght<7 || senha.lenght>100){
                     return response.status(400).json();
+                }
+                if(!saltRounds){
+                    return response.status(500).json();
                 }
                 const senhaCriptografada = await bcrypt.hash(senha,saltRounds);
                 const {inserido,status} = await crudBanco.adicionar('usuario',{nome, matricula, email, curso, "senha":senhaCriptografada, grade},['nome','matricula','email','curso','grade']);
@@ -123,6 +126,9 @@ export default class usuarioController{
                     return response.status(400).json({erro: "Senha antiga incorreta!!!"});
                 }else{
                     try{
+                        if(!saltRounds){
+                            return response.status(500).json();
+                        }
                         senhaNova = await bcrypt.hash(senhaNova,saltRounds);
                         const {editado,status} = await crudBanco.editar('usuario',{'matricula':matricula},{'senha':senhaNova}, ['nome','matricula','email','curso','grade']);
                         return response.status(status).json(editado);
@@ -179,12 +185,35 @@ export default class usuarioController{
                     if(!senhaToken){
                         return response.status(500).json();
                     }
-                    const token = jwt.sign({'matricula': selected.matricula},senhaToken,{'expiresIn': '1h'});
+                    const token = jwt.sign({'email': email},senhaToken,{'expiresIn': '1h'});
                     enviaEmail(selected.email,selected.nome,token);
                 }catch{
                     return response.status(500).json();
                 }
             }
+        }
+    }
+
+    static async esqueciSenhaModificaSenha(request:Request,response:Response){
+        const email = response.locals.email;
+        const {matricula,novaSenha} = request.body;
+        const {select,status} = await crudBanco.listar('usuario',['*'],'',{},{matricula,email});
+        if(status==500){
+            return response.status(500).json();
+        }
+        const selected = select[0];
+        if(!selected){
+            return response.status(400).json({"erro": "Matricula não bate com o email"});
+        }
+        try{
+            if(!saltRounds){
+                return response.status(500).json();
+            }
+            const senhaCriptografada = await bcrypt.hash(novaSenha,saltRounds);
+            const {editado,status} = await crudBanco.editar('usuario',{matricula,email},{'senha':senhaCriptografada}, ['nome','matricula','email','curso','grade']);
+            return response.status(status).json(editado);
+        }catch(err){
+            return response.status(500).json();
         }
     }
 }

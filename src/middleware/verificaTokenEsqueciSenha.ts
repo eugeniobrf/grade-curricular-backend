@@ -1,7 +1,7 @@
 import {Request, Response} from 'express';
 import jwt from 'jsonwebtoken';
 
-function verificaToken (request: Request, response: Response, next:Function){
+function verificaTokenEsqueciSenha (request: Request, response: Response, next:Function){
     const token=<string>request.headers.token;
     if(!token){
         return response.status(401).json();
@@ -12,7 +12,7 @@ function verificaToken (request: Request, response: Response, next:Function){
         }
         try{
             let tokenValidado = <any>jwt.verify(token,senhaToken);
-            response.locals.matricula = tokenValidado.matricula;
+            response.locals.email = tokenValidado.email;
             return next();
         }catch(err){
             response.status(401).json();
@@ -20,4 +20,4 @@ function verificaToken (request: Request, response: Response, next:Function){
     }
 }
 
-export default verificaToken;
+export default verificaTokenEsqueciSenha;

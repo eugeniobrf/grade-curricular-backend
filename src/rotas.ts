@@ -7,6 +7,7 @@ import usuarioController from './controllers/usuarioController';
 import suporteController from './controllers/suporteController';
 import disciplinaCursadaController from './controllers/disciplinaCursadaController';
 import verificaToken from './middleware/verificaToken';
+import verificaTokenEsqueciSenha from './middleware/verificaTokenEsqueciSenha';
 
 const rotas = express.Router();
 
@@ -20,6 +21,7 @@ rotas.get('/departamento',departamentoController.listarDepartamentos);
 rotas.get('/disciplina/:departamento',disciplinaController.listarDisciplinasPorDeparamento);
 rotas.get('/detalhaGrade/:grade',gradeController.detalharGrade);
 rotas.get('/esqueciSenha',usuarioController.esqueciSenha);
+rotas.get('/esqueciSenha/:token',[verificaTokenEsqueciSenha],usuarioController.esqueciSenhaModificaSenha);
 
 //rotas de usuarios comuns
 rotas.put('/usuario',[verificaToken],usuarioController.editarUsuario);
