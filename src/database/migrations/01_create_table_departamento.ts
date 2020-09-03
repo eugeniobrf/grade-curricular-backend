@@ -3,7 +3,7 @@ import Knex from 'knex';
 export async function up(knex: Knex){
     return knex.schema.createTable('departamento',
         table=>{
-            table.string('codigo',3).primary();
+            table.string('codigo',7).primary();
             table.string('nome',60).notNullable();
         }
     );

@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 import enviaEmail from '../utils/enviaEmail';
 
 const saltRounds = process.env.SALTROUNDS;
-const tempoToken = '10h';
+const tempoToken = process.env.TEMPO_TOKEN;
 
 export default class usuarioController{
     static async addUsuario(request: Request, response: Response){

@@ -25,7 +25,7 @@ export default class suporteController{
 
     static async listarSuportes(request: Request, response: Response){
         const matricula = response.locals.matricula;
-        let {select,status} = await crudBanco.listar('suporte',['codigo','descricao','status','resposta'],'',{},{'usuario':matricula});
+        let {select,status} = await crudBanco.listar('suporte',['codigo','descricao','criado','status','resposta','respondido'],'',{},{'usuario':matricula});
         return response.status(status).json(select);
     }
 }

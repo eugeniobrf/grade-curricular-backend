@@ -6,8 +6,10 @@ export async function up(knex: Knex){
             table.increments('codigo').primary();
             table.string('usuario',15).defaultTo(null);
             table.string('descricao',1500).notNullable();
+            table.timestamp('criado').defaultTo(knex.fn.now());
             table.integer('status').defaultTo(0);
             table.string('resposta',1500).defaultTo(null);
+            table.timestamp('respondido').defaultTo(null);
             table.foreign('usuario').references('matricula').inTable('usuario').onUpdate('cascade').onDelete('cascade');
         });
 }

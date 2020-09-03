@@ -49,7 +49,7 @@ Para isto, foi desenvolvido em nodeJS e armazenado neste repositório o backend 
     *   Rota: /detalharGrade/:grade
     *   Parâmetro: grade na rota é o código da grade da qual se deseja listar as disciplinas
     *   Retorno: { obrigatorias: [{codigo, nome, cargaHoraria, periodo}, ...], eletivas:  [{codigo, nome, cargaHoraria, periodo}, ...], horasObrigatorias, horasEletivas, horasComplementares }
-*   **[x] esqueci a senha: **
+*   **[x] esqueci a senha:**
     *   Tipo: GET
     *   Rota: /esqueciSenha
     *   Parâmetro: body contendo o email do usuário {email}

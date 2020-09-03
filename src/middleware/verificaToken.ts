@@ -13,6 +13,8 @@ function verificaToken (request: Request, response: Response, next:Function){
         try{
             let tokenValidado = <any>jwt.verify(token,senhaToken);
             response.locals.matricula = tokenValidado.matricula;
+            const newToken = jwt.sign({'matricula': tokenValidado.matricula},senhaToken,{'expiresIn': process.env.TEMPO_TOKEN});
+            response.setHeader('token',newToken);
             return next();
         }catch(err){
             response.status(401).json();
