@@ -23,7 +23,7 @@ export default async function enviaEmail(destinatario:string, nomeUser:string, t
                 `,
                 html: `
                     <h1>Olá ${nomeUser},</h1><br>
-                    <h2>Para recuperar sua senha, por favor clique no link a seguir e informe sua matricula e sua nova senha: <b><a href=${process.env.LINK_FRONT}${token}>${process.env.LINK_FRONT}${token}</a></b>.</h2><br>
+                    <h2>Para recuperar sua senha, por favor clique no link a seguir e informe sua matricula e sua nova senha: <a href=${process.env.LINK_FRONT}/${token}>${process.env.LINK_FRONT}/${token}</a>.</h2><br>
                     <h3>Por motivos de segurança, o link acima só será válido durante os próximos 60 minutos.<br>
                     Se você não deseja redefinir sua senha ou não solicitou estas informações, pode ignorar este e-mail.</h3>
                 `

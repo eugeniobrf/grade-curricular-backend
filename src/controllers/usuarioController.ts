@@ -5,7 +5,12 @@ import jwt from 'jsonwebtoken';
 import enviaEmail from '../utils/enviaEmail';
 
 const saltRounds = process.env.SALTROUNDS;
-const tempoToken = process.env.TEMPO_TOKEN;
+let tempoTokenString=process.env.TEMPO_TOKEN;
+let tempoToken:number;
+if(tempoTokenString){
+    tempoToken = parseInt(tempoTokenString);
+}
+
 
 export default class usuarioController{
     static async addUsuario(request: Request, response: Response){
@@ -17,10 +22,10 @@ export default class usuarioController{
                 if(senha.lenght<7 || senha.lenght>100){
                     return response.status(400).json();
                 }
-                if(!saltRounds){
+                if(!(saltRounds)){
                     return response.status(500).json();
                 }
-                const senhaCriptografada = await bcrypt.hash(senha,saltRounds);
+                const senhaCriptografada = await bcrypt.hash(senha,parseInt(saltRounds));
                 const {inserido,status} = await crudBanco.adicionar('usuario',{nome, matricula, email, curso, "senha":senhaCriptografada, grade},['nome','matricula','email','curso','grade']);
                 return response.status(status).json(inserido);
             }catch(err){
@@ -48,7 +53,7 @@ export default class usuarioController{
                         return response.status(400).json({erro: "Senha incorreta!!!"});
                     }else{
                         const senhaToken=process.env.SENHA_TOKEN;
-                        if(!senhaToken){
+                        if(!senhaToken || !tempoToken){
                             return response.status(500).json();
                         }
                         const token = jwt.sign({'matricula': selected.matricula},senhaToken,{'expiresIn': tempoToken});
@@ -95,7 +100,7 @@ export default class usuarioController{
         const {editado,status} = await crudBanco.editar('usuario',{"matricula":matriculaAntiga}, editar, ['nome','matricula','email','curso','grade']);
         if(status===200){
             const senhaToken=process.env.SENHA_TOKEN;
-            if(!senhaToken){
+            if(!senhaToken || !tempoToken){
                 return response.status(500).json();
             }
             const token = jwt.sign({'matricula': editado.matricula,'curso': editado.curso, 'grade': editado.grade},senhaToken,{'expiresIn': tempoToken});
@@ -118,7 +123,7 @@ export default class usuarioController{
                 let {senhaAntiga,senhaNova} = request.body;
                 let match;
                 try{
-                    match = await bcrypt.compare(senhaAntiga,selected.senha);
+                    match = await bcrypt.compare(senhaAntiga.toString(),selected.senha.toString());
                 }catch(err){
                     return response.status(500).json();
                 }
@@ -129,7 +134,7 @@ export default class usuarioController{
                         if(!saltRounds){
                             return response.status(500).json();
                         }
-                        senhaNova = await bcrypt.hash(senhaNova,saltRounds);
+                        senhaNova = await bcrypt.hash(senhaNova,parseInt(saltRounds));
                         const {editado,status} = await crudBanco.editar('usuario',{'matricula':matricula},{'senha':senhaNova}, ['nome','matricula','email','curso','grade']);
                         return response.status(status).json(editado);
                     }catch(err){
@@ -186,7 +191,8 @@ export default class usuarioController{
                         return response.status(500).json();
                     }
                     const token = jwt.sign({'email': email},senhaToken,{'expiresIn': '1h'});
-                    enviaEmail(selected.email,selected.nome,token);
+                    const s = await enviaEmail(selected.email,selected.nome,token);
+                    return response.status(s).json();
                 }catch{
                     return response.status(500).json();
                 }
